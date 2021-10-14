@@ -1,4 +1,6 @@
+import { BuiltinFunctionCall } from '@angular/compiler/src/compiler_util/expression_converter';
 import { Injectable } from '@angular/core';
+import { environment } from 'src/environments/environment';
 
 export abstract class Logger {
 
@@ -10,92 +12,115 @@ export abstract class Logger {
     DEBUG: 0
   }
 
-  /** 開啟Client logger */
-  static ENABLE_CLIENT_LOGGER: boolean;
-
-  /** 開啟Server logger */
-  static ENABLE_SERVER_LOGGER: boolean;
-
-  /** 開啟紀錄執行時間log */
-  static ENABLE_PERFORMANCE_LOG: boolean;
-
-  /** 開啟Global錯誤的Alert顯示 */
-  static ENABLE_GLOBAL_ERROR_ALERT: boolean;
+  static debugMode: boolean;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class LoggerService implements Logger {
 
   constructor() { }
 
+  /**
+  * Debug mode switch
+  *
+  * @returns {boolean}
+  */
+  get debugMode() { return Logger.debugMode; }
+  set debugMode(status: boolean) { Logger.debugMode = status; }
+
+  /**
+   * Debug logger
+   *
+   * @param msg Debug message
+   */
+  tee(...msg: any[]) {
+    // save log into file: how to save log to local
+    // this.eleSvc.sendInfoLog(JSON.stringify([...msg]));
+
+    // show log on console
+    if (Logger.debugMode) console.log(...msg);
+  }
+
+  /**
+  * Error logger
+  *
+  * @param msg Error message
+  */
+  teeErr(...msg: any[]) {
+    // save error log into file
+    // this.eleSvc.sendErrorLog(JSON.stringify([...msg]));
+
+    // show error log on console
+    if (Logger.debugMode) console.error(...msg);
+  }
+
+  /**
+  * Enable or disable debug mode
+  */
+  toggleDebugMode() {
+    // if (!environment.production) this.eleSvc.ipcRenderer.sendSync('show-dev-tools');
+  }
+
   /** 預設錯誤層級 */
   protected loggerLevel: number = Logger.LOGGER_LEVEL.ERROR;
 
-  /**
-   * mfp logger
-   */
-  private mfpLogger: any = null;
 
   /**
-   * Service名稱
+   * logger
    */
-  protected getServiceName(): string {
-    return 'LoggerService';
-  }
+  private initLogger: any = null;
 
   /**
-   * mfp log logger
+   * log logger
    */
   protected mfpLog(...logs: any[]): void {
-    if (this.mfpLogger != null) {
-      this.mfpLogger.log(...logs);
+    if (this.initLogger != null) {
+      this.initLogger.log(...logs);
     }
   }
 
   /**
-   * mfp debug logger
+   * debug logger
    */
   protected mfpDebug(...logs: any[]): void {
-    if (this.mfpLogger != null) {
-      this.mfpLogger.debug(...logs);
+    if (this.initLogger != null) {
+      this.initLogger.debug(...logs);
     }
   }
 
   /**
-   * mfp info logger
+   * info logger
    */
   protected mfpInfo(...logs: any[]): void {
-    if (this.mfpLogger != null) {
-      this.mfpLogger.info(...logs);
+    if (this.initLogger != null) {
+      this.initLogger.info(...logs);
     }
   }
 
   /**
-   * mfp warn logger
+   * warn logger
    */
   protected mfpWarn(...logs: any[]): void {
-    if (this.mfpLogger != null) {
-      this.mfpLogger.warn(...logs);
+    if (this.initLogger != null) {
+      this.initLogger.warn(...logs);
     }
   }
 
   /**
-   * mfp error logger
+   * error logger
    */
   protected mfpError(...logs: any[]): void {
-    if (this.mfpLogger != null) {
-      this.mfpLogger.error(...logs);
+    if (this.initLogger != null) {
+      this.initLogger.error(...logs);
     }
   }
 
   /**
-   * mfp fatal logger
+   * fatal logger
    */
   protected mfpFtal(...logs: any[]): void {
-    if (this.mfpLogger != null) {
-      this.mfpLogger.fatal(...logs);
+    if (this.initLogger != null) {
+      this.initLogger.fatal(...logs);
     }
   }
 
@@ -149,71 +174,4 @@ export class LoggerService implements Logger {
     return false;
   }
 
-  /**
-   * debug client logger
-   */
-  debug(...logs: any[]): void {
-    if (Logger.ENABLE_SERVER_LOGGER) { // 有設定開啟Server log
-      // 依server log level也顯示client log
-      if (this.loggerLevel <= Logger.LOGGER_LEVEL.DEBUG) return; // 已log,不需再執行CLIENT_LOGGER
-    }
-
-    if (Logger.ENABLE_CLIENT_LOGGER) {
-      if (this.loggerLevel <= Logger.LOGGER_LEVEL.DEBUG) {
-        this.mfpWarn('DEBUG', ...logs);
-      }
-    }
-  }
-
-  /**
-   * info client logger
-   */
-  info(...logs: any[]): void {
-    if (Logger.ENABLE_SERVER_LOGGER) {
-      if (this.loggerLevel <= Logger.LOGGER_LEVEL.INFO) this.mfpInfo('INFO：', ...logs);
-    }
-
-    if (Logger.ENABLE_CLIENT_LOGGER) {
-      if (this.loggerLevel <= Logger.LOGGER_LEVEL.INFO) this.mfpInfo('WEB', ...logs);
-    }
-  }
-
-  /**
-   * warn client logger
-   */
-  warn(...logs: any[]): void {
-    if (Logger.ENABLE_SERVER_LOGGER) {
-      if (this.loggerLevel <= Logger.LOGGER_LEVEL.WARN) this.mfpWarn('WARN：', ...logs);
-    }
-
-    if (Logger.ENABLE_CLIENT_LOGGER) {
-      if (this.loggerLevel <= Logger.LOGGER_LEVEL.WARN) this.mfpInfo('WEB', ...logs);
-    }
-  }
-
-  /**
-   * error client logger
-   */
-  error(...logs: any[]): void {
-    if (Logger.ENABLE_SERVER_LOGGER) {
-      if (this.loggerLevel <= Logger.LOGGER_LEVEL.ERROR) this.mfpError('ERROR：', ...logs);
-    }
-
-    if (Logger.ENABLE_CLIENT_LOGGER) {
-      if (this.loggerLevel <= Logger.LOGGER_LEVEL.ERROR) this.mfpError('WEB', ...logs);
-    }
-  }
-
-  /**
-   * fatal client logger
-   */
-  fatal(...logs: any[]): void {
-    if (Logger.ENABLE_SERVER_LOGGER) {
-      if (this.loggerLevel <= Logger.LOGGER_LEVEL.FATAL) this.mfpFtal('FATAL：', ...logs);
-    }
-
-    if (Logger.ENABLE_CLIENT_LOGGER) {
-      if (this.loggerLevel <= Logger.LOGGER_LEVEL.FATAL) this.mfpFtal('WEB', ...logs);
-    }
-  }
 }
