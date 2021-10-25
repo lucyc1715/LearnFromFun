@@ -1,7 +1,8 @@
 import { BuiltinFunctionCall } from '@angular/compiler/src/compiler_util/expression_converter';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-
+import * as fs from "fs";
+const { Console } = require("console");
 export abstract class Logger {
 
   static LOGGER_LEVEL: any = {
@@ -18,15 +19,13 @@ export abstract class Logger {
 @Injectable({ providedIn: 'root' })
 export class LoggerService implements Logger {
 
+  /** 預設錯誤層級 */
+  protected loggerLevel: number = Logger.LOGGER_LEVEL.ERROR;
+  protected myLogger = new Console({
+    stdout: "",
+    stderr: "",
+  });
   constructor() { }
-
-  /**
-  * Debug mode switch
-  *
-  * @returns {boolean}
-  */
-  get debugMode() { return Logger.debugMode; }
-  set debugMode(status: boolean) { Logger.debugMode = status; }
 
   /**
    * Debug logger
@@ -61,69 +60,17 @@ export class LoggerService implements Logger {
     // if (!environment.production) this.eleSvc.ipcRenderer.sendSync('show-dev-tools');
   }
 
-  /** 預設錯誤層級 */
-  protected loggerLevel: number = Logger.LOGGER_LEVEL.ERROR;
-
-
-  /**
-   * logger
-   */
-  private initLogger: any = null;
-
-  /**
-   * log logger
-   */
-  protected mfpLog(...logs: any[]): void {
-    if (this.initLogger != null) {
-      this.initLogger.log(...logs);
+  saveLog() {
+    const genTime = Date.now();
+    const dir = './logs';
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
     }
+    this.myLogger = new Console({
+      stdout: fs.createWriteStream("normalStdout.txt"),
+      stderr: fs.createWriteStream("errStdErr.txt"),
+    });
   }
-
-  /**
-   * debug logger
-   */
-  protected mfpDebug(...logs: any[]): void {
-    if (this.initLogger != null) {
-      this.initLogger.debug(...logs);
-    }
-  }
-
-  /**
-   * info logger
-   */
-  protected mfpInfo(...logs: any[]): void {
-    if (this.initLogger != null) {
-      this.initLogger.info(...logs);
-    }
-  }
-
-  /**
-   * warn logger
-   */
-  protected mfpWarn(...logs: any[]): void {
-    if (this.initLogger != null) {
-      this.initLogger.warn(...logs);
-    }
-  }
-
-  /**
-   * error logger
-   */
-  protected mfpError(...logs: any[]): void {
-    if (this.initLogger != null) {
-      this.initLogger.error(...logs);
-    }
-  }
-
-  /**
-   * fatal logger
-   */
-  protected mfpFtal(...logs: any[]): void {
-    if (this.initLogger != null) {
-      this.initLogger.fatal(...logs);
-    }
-  }
-
   /**
    * log是否為Debug層級
    */
