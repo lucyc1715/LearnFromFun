@@ -33,8 +33,9 @@ export class LoggerService implements Logger {
    * @param msg Debug message
    */
   tee(...msg: any[]) {
-    // save log into file: how to save log to local
+    // save log into file
     // this.eleSvc.sendInfoLog(JSON.stringify([...msg]));
+    this.saveLog(JSON.stringify([...msg]));
 
     // show log on console
     if (Logger.debugMode) console.log(...msg);
@@ -48,6 +49,7 @@ export class LoggerService implements Logger {
   teeErr(...msg: any[]) {
     // save error log into file
     // this.eleSvc.sendErrorLog(JSON.stringify([...msg]));
+    this.saveLog(JSON.stringify([...msg]));
 
     // show error log on console
     if (Logger.debugMode) console.error(...msg);
@@ -60,7 +62,7 @@ export class LoggerService implements Logger {
     // if (!environment.production) this.eleSvc.ipcRenderer.sendSync('show-dev-tools');
   }
 
-  saveLog() {
+  saveLog(log: any) {
     const genTime = Date.now();
     const dir = './logs';
     if (!fs.existsSync(dir)) {
@@ -71,6 +73,7 @@ export class LoggerService implements Logger {
       stderr: fs.createWriteStream("errStdErr.txt"),
     });
   }
+
   /**
    * log是否為Debug層級
    */
