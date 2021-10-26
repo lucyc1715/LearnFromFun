@@ -2,26 +2,56 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.4.
 
-## Development server
+## Features
+Let's getting started our journey on Angular. 
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+``` mermaid
+graph LR;
+Minions-->Account;
+Minions-->Playlist;
+Minions-->Others;
+Minions-->Bouns;
+Account-->Login;
+Account-->Register;
+Account-->Profile;
+Playlist-->songs-detatil;
+Playlist-->My-playlist;
+Playlist-->chart-play-times;
+Others-->SSR-Imp;
+Bouns-->release-to-github;
+Bouns-->Jenkins-CICD;
+```
+Here contains all of features that will implement into this project.
 
-## Code scaffolding
+### Login Logout Register
+- auth
+- firebase
+- from
+- validation
+- upload img
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+### Spotify Playlist
+- integration Spotify open api
+- search list
+- save songs to my playlist
 
-## Build
+### Song Content
+- song introduction
+- feedback comment
+- play
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+### My Playlist
+- collection from search list
 
-## Running unit tests
+### Chart of Play Times
+- search criteria area
+- display songs play times
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+### Profile
+- display img, name, github link
+- generate QR code of github link or linkedIn link
 
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+### Setting
+- receive notification
+- with or without Internet access search or play songs
+- i18n
