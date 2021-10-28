@@ -17,9 +17,6 @@ Account-->Profile;
 Playlist-->songs-detatil;
 Playlist-->My-playlist;
 Playlist-->chart-play-times;
-Others-->SSR-Imp;
-Bouns-->release-to-github;
-Bouns-->Jenkins-CICD;
 ```
 Here contains all of features that will implement into this project.
 
